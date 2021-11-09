@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <script src = "js/oimo.js"></script>
+        <script src = "js/babylon.js"></script>
+        <script src = "js/perlin.js"></script>
+        <script src = "js/random.js"></script>
+        <script src = "js/water.js"></script>
+        <script src = "js/index.js"></script>
+        <script src = "js/babylon.triPlanar.js"></script>
+        <script src = "js/babylon.treeGenerator.js"></script>
+        <script src = "js/Terain.js"></script>
+        <script src = "js/build.js"></script>
+        <script src = "js/babylon.waterMaterial.js"></script>
+        <script src = "js/createHeighMap_new.js"></script>
+        <script src = "js/Camera.js"></script>
+        <!--<script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+        <meta name="viewport" content="maximum-scale=1">-->
+        <style>
+            html, body {
+                overflow:hidden;
+                width:100%;
+                height:100%;
+                margin:0;
+                padding:0;
+            }
+
+            #canvas {
+                width:100%;
+                height:100%;
+                background-color:red;
+                -webkit-user-select:none;
+                //touch-action: none;
+            }
+            .noCursor {
+                cursor:none !important;
+            }
+            #canvas2 {
+                position:absolute;
+                width:20vw;
+                height:25vh;
+                left:0;
+                top:0;
+                background-color:orange;
+            }
+            #picked {
+                position:absolute;
+                background-color:red;
+                width:5vw;
+                height:5vh;
+            }
+            span {
+                position:absolute;
+                top:0;
+                height:0;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id = "canvas" class = "noCursor" oncontextmenu="return false"></canvas>
+        <canvas id = "canvas2"></canvas>
+        <img id = "image" src = "textures/stonen.png">
+        <span>X:Y</span>
+        <script src = "http://localhost:35729/livereload.js" charset="utf-8"></script>
+    </body>
+</html>

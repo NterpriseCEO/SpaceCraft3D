@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <script src = "js/babylon.js"></script>
+        <script src = "babylon.bigGround.js"></script>
+        <script src = "js/createHeighMap_new.js"></script>
+        <script src = "js/perlin.js"></script>
+        <style>
+            html, body {
+                overflow: hidden;
+                width   : 100%;
+                height  : 100%;
+                margin  : 0;
+                padding : 0;
+            }
+            #canvas {
+                position:absolute;
+                width   : 100%;
+                height  : 100%;
+                background-color:red;
+                //cursor:none !important;
+                -webkit-user-select:none;
+                //touch-action: none;
+            }
+            #canvas2 {
+                position:absolute;
+                z-index:2;
+                width:20vw;
+                height:25vh;
+                left:80vw;
+                background-color:grey;
+                //display:none;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id = "canvas" oncontextmenu="return false"></canvas>
+        <canvas id = "canvas2"></canvas>
+        <script>
+            var canvas = document.getElementById("canvas");
+            var engine = new BABYLON.Engine(canvas);
+            var img;
+            var onChunk;
+            var chunks = [];
+            var terrain;
+            var chunksBox = [];
+            var chunksName = [];
+            var chunksImage = [];
+            var chunksMat = [];
+            var map = createHeightMap(256);
+            function createScene() {
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.FreeCamera("camera",new BABYLON.Vector3.Zero(),scene);
+                camera.attachControl(canvas,true);
+                camera.position.y = 256;
+                camera.speed = 100; 
+                var map = createHeightMap();
+                BABYLON.Mesh.CreatebigGround("terrain",map,4,4,1900,160,0,420,scene);
+                var light = new BABYLON.PointLight("light",new BABYLON.Vector3(0,1000,0),scene);
+                engine.isPointerLock = false;
+                return scene;
+            }
+            var scene = createScene();
+            engine.runRenderLoop(function() {
+               scene.render(); 
+            });
+        </script>
+    </body>
+</html>

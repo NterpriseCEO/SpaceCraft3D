@@ -1,0 +1,180 @@
+<html>
+    <head>
+        <script src = "js/babylon.js"></script>
+        <script src = "babylon.bigGround.js"></script>
+        <script src = "js/createHeighMap_new.js"></script>
+        <script src = "js/perlin.js"></script>
+        <style>
+            html, body {
+                overflow: hidden;
+                width   : 100%;
+                height  : 100%;
+                margin  : 0;
+                padding : 0;
+            }
+            #canvas {
+                position:absolute;
+                width   : 100%;
+                height  : 100%;
+                background-color:red;
+                //cursor:none !important;
+                -webkit-user-select:none;
+                //touch-action: none;
+            }
+            #canvas2 {
+                position:absolute;
+                z-index:2;
+                width:20vw;
+                height:25vh;
+                left:80vw;
+                background-color:grey;
+                //display:none;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id = "canvas" oncontextmenu="return false"></canvas>
+        <canvas id = "canvas2"></canvas>
+        <script>
+            var canvas = document.getElementById("canvas");
+            var engine = new BABYLON.Engine(canvas);
+            var img;
+            var onChunk;
+            var chunks = [];
+            var terrain;
+            var chunksBox = [];
+            var chunksName = [];
+            var chunksImage = [];
+            var chunksMat = [];
+            function createScene() {
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.FreeCamera("camera",new BABYLON.Vector3.Zero(),scene);
+                camera.attachControl(canvas,true);
+                camera.position.y = 7000;
+                camera.speed = 100;
+                camera.maxZ = 200000;
+                
+                var light = new BABYLON.PointLight("light",new BABYLON.Vector3(0,8000,0),scene)
+                /*var c = 0;
+                var terrain;
+                var image = createHeightMap(1024,8,8);
+                for(var z = 0; z <8; z++) {
+                    for(var x = 0; x <8; x++) {
+                        terrain =
+                        BABYLON.Mesh.CreateGroundFromHeightMap("terrain"+x+""+z,
+                        image[c],12500,12500,100,0,7000,scene,true);
+                        chunksImage[c] = image;
+                        terrain.position.x = x*12500;
+                        terrain.position.z = -(z*12500);
+                        var terrainMaterial = new BABYLON.StandardMaterial("terMat",scene);
+                        terrainMaterial.diffuseTexture = new BABYLON.Texture("textures/stone.png",scene);
+                        terrainMaterial.diffuseTexture.uScale = 60;
+                        terrainMaterial.diffuseTexture.vScale = 60;
+                        terrainMaterial.specularColor = new BABYLON.Color3.Black();
+                        terrain.material = terrainMaterial;
+                        var box = BABYLON.Mesh.CreateBox("box"+x+""+z,12500,scene);
+                        box.position = terrain.position;
+                        var bm = new BABYLON.StandardMaterial("sm",scene);
+                        bm.alpha = 0.0;
+                        box.material = bm;
+                        chunks[c] = terrain;
+                        chunksBox[c] = box;
+                        chunksName[c] = chunks[c].name;
+                        chunksMat[c] = terrainMaterial;
+                        c++;
+                    }
+                }
+                //scene.debugLayer.show();
+                //engine.isPointerLock = true;
+                //  var mine = new Mine(scene);
+                scene.registerBeforeRender(function() {
+                    for(var i = 0; i < chunksBox.length;i++) {
+                        if(camera.position.x >=chunksBox[i].position.x-12500 &&
+                           camera.position.x <=chunksBox[i].position.x+12500 &&
+                           camera.position.z >=chunksBox[i].position.z-12500 &&
+                           camera.position.z <=chunksBox[i].position.z+12500) {
+                            if(scene.getMeshByName(chunksName[i]) == undefined) {
+                                var terrain = BABYLON.Mesh.CreateGroundFromHeightMap(chunks[i].name,image[i],12500,12500,100,0,7000,scene,true);
+                                terrain.position = chunksBox[i].position;
+                                terrain.material = chunksMat[i];
+                                chunks[i] = terrain;
+                                chunksName[i] = chunks[i].name;
+                                onChunk = chunks[i];
+                            }else {
+                                onChunk = chunks[i];
+                            }
+                            onChunk = chunks[i];
+                        }else {
+                            chunks[i].dispose();
+                        }
+                    }
+                    var ray = new BABYLON.Ray(new BABYLON.Vector3(camera.position.x, camera.position.y, camera.position.z),new BABYLON.Vector3(0, -1, 0)); 
+                    var worldInverse = new BABYLON.Matrix();
+                    onChunk.getWorldMatrix().invertToRef(worldInverse);
+                    ray = BABYLON.Ray.Transform(ray, worldInverse);
+                    var pickInfo = onChunk.intersects(ray);
+                    if(pickInfo.hit) {
+                        if(camera.position.y <= pickInfo.pickedPoint.y+50) {
+                            camera.position.y = pickInfo.pickedPoint.y+50;
+                        }
+                    }
+                });*/
+                var ground = BABYLON.Mesh.CreatebigGround(scene);
+                return scene;
+            }
+            var scene = createScene();
+            engine.runRenderLoop(function() {
+               scene.render(); 
+            });
+            
+            function Mine(scene) {
+                for(var i = 0; i < chunks.length;i++) {
+                    this.ground = scene.getMeshByName(chunksName[i]);
+                    this.ground.actionManager = new BABYLON.ActionManager(scene);
+                    var interval;
+                    var addGround;
+                    var blockInterval;
+                    var _this = this;
+                    this.ground.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnRightPickTrigger, function () {
+                        interval = setInterval(function() {
+                            var pickResult = scene.pick(scene.pointerX,scene.pointerY);
+                            var pick = pickResult.pickedPoint;
+                            _this.editGround(pick.x,pick.z,-1,scene);
+                        });
+                    }));
+                    this.ground.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+                        clearInterval(blockInterval);
+                        clearInterval(interval);
+                        clearInterval(addGround);
+                    }));
+                    this.ground.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnLeftPickTrigger, function () { 
+                        addGround = setInterval(function() {
+                            var pickResult = scene.pick(681,385);
+                            var pick = pickResult.pickedPoint;
+                            _this.editGround(pick.x,pick.z,1,scene);
+                        });   
+                    }));
+                }
+            }
+            Mine.prototype.editGround = function(x,z,dir,scene) {
+                x -= this.ground.position.x;
+                z -= this.ground.position.z;
+                var col = Math.floor((x + this.ground._maxX) * this.ground.subdivisions / this.ground._width);
+                var row = Math.floor(-(z + this.ground._maxZ) * this.ground.subdivisions / this.ground._height + this.ground.subdivisions);
+
+                var i = row * (this.ground._subdivisions + 1) + col;
+                var y1 = i * 3 + 1;
+                var y2 = (i + 1) * 3 + 1;
+                var y3 = (i + this.ground._subdivisions + 1) * 3 + 1;
+                var changeAltitude = function(positions) {
+                    positions[y1] += dir;
+                    positions[y2] += dir;
+                    positions[y3] += dir;
+                }
+                this.ground.updateMeshPositions(changeAltitude);
+                this.ground.updateCoordinateHeights();
+                return;
+            }
+        </script>
+    </body>
+</html>
